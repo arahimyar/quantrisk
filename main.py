@@ -281,6 +281,7 @@ print(f"Total Time: {elapsed}")
 ### (4) Add visualizations
 ### (5) Implement warm starts in rolling window
 ### (6) Fix issue with unpacking nu
+### (7) Add CVaR
 
 # exceedances95 = data <= VaR95
 # exceedances99 = data <= VaR99
