@@ -19,20 +19,22 @@ class Risk:
 
         self.ARMAGARCH = ARMAGARCH_model if ARMAGARCH_model is not None else ARMAGARCH()
 
-    def get_ARMAGARCH_params(self):
-        return {"ARMA" : self.ARMAGARCH.ARMA_params, "GARCH" : self.ARMAGARCH.GARCH_params}
-
     def fit_distribution(self, data):
         resids, variances = self.ARMAGARCH.get_innovations(data)
         shocks = self.ARMAGARCH.get_shocks(resids, variances)
         self.distribution.fit(shocks)
         return None
     
-    def get_VaR(self):
-        pass
+    ### Alpha here is the tail probability
+    def get_VaR(self, alpha):
+        forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast()
+        q = self.distribution.get_VaR_crit(alpha)
+        return forecast_mean + q * np.sqrt(forecast_variance)
+
 
     def get_CVaR(self):
-        pass
+        forecast_mean, forecast_variance = ARMAGARCH.one_day_forecast()
+
 
     
     
