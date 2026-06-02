@@ -6,7 +6,8 @@ class Statistics:
         self.prediction = np.asarray(prediction)
         self.actual = np.asarray(actual)
         self.alpha = alpha
-        self.exceedances = np.sum(self.prediction < self.actual)
+        self.mask = self.prediction > self.actual
+        self.exceedances = np.sum(self.mask)
         self.N = len(actual)
 
     def binomial(self, alpha = None):
@@ -34,14 +35,15 @@ class Statistics:
         return LR, 1 - stats.chi2.cdf(LR, df = 1)
 
     def christoffersen(self):
-        mask = self.prediction < self.actual
+        if self.exceedances < 2:
+            return 0.0, 1.0
         no_no = 0
         yes_no = 0
         no_yes = 0
         yes_yes = 0
         for i in range(1, self.N):
-            prev = mask[i-1]
-            curr = mask[i]
+            prev = self.mask[i-1]
+            curr = self.mask[i]
             if prev == 0 and curr == 0:
                 no_no += 1
             elif prev == 0 and curr == 1:
@@ -51,8 +53,8 @@ class Statistics:
             elif prev == 1 and curr == 1:
                 yes_yes += 1
 
-        p0 = no_yes / (no_no + no_yes)
-        p1 = yes_yes / (yes_no + yes_yes)
+        p0 = no_yes / (no_no + no_yes) if (no_no + no_yes) > 0 else 0
+        p1 = yes_yes / (yes_no + yes_yes) if (yes_no + yes_yes) > 0 else 0
         p = (no_yes + yes_yes) / (no_no + no_yes + yes_no + yes_yes)
 
         num = 0
@@ -75,8 +77,15 @@ class Statistics:
         LR = LR_kupiec + LR_christoffersen
         return LR, 1 - stats.chi2.cdf(LR, df = 2)
 
+    def get_PIT(self, distributions):
+        return [f(x) for f, x in zip(distributions, self.actual)]
+
     def QQ(self, distributions):
-        
+        model = sorted(self.get_PIT(distributions))
+        n = len(model)
+        emperical = [float(i+1) / float(n+1) for i in range(n)]
+        return list(zip(emperical, model))
     
-    def KS(self):
-        pass
+    def KS(self, distributions):
+        pit_vals = self.get_PIT(distributions)
+        return stats.kstest(pit_vals, 'uniform')
