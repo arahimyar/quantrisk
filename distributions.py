@@ -47,7 +47,7 @@ class Gaussian(Distribution):
         return -0.5 * np.log(2 * np.pi) - 0.5 * (x ** 2)
 
     def fit(self, data):
-        return
+        return []
 
     def get_VaR_crit(self, x):
         return stats.norm.ppf(x)
@@ -85,7 +85,7 @@ class StudentT(Distribution):
         initial = self.get_init_params()
         result = minimize(self.objective, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
         self.parameters["nu"] = result.x[0]
-        return 
+        return [self.parameters["nu"]]
 
     def get_VaR_crit(self, x):
         nu = self.parameters["nu"]
@@ -146,7 +146,7 @@ class NIG(Distribution):
         result = minimize(self.objective, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
         self.parameters["alpha"] = result.x[0]
         self.parameters["beta"] = result.x[1]
-        return 
+        return [self.parameters["alpha"],  self.parameters["beta"]]
 
     def get_VaR_crit(self, x):
         alpha = self.parameters["alpha"]
