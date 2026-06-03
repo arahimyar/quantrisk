@@ -129,7 +129,7 @@ class NIG(Distribution):
         gamma = np.sqrt(alpha**2 - beta**2)
         scale = gamma**3 / alpha**2
         loc = - (scale * beta) / gamma
-        return stats.norminvgauss.cdf(x, a = alpha * scale, b = beta * scale, scale = scale, loc = loc)
+        return stats.norminvgauss.cdf(x, a = alpha, b = beta, scale = scale, loc = loc)
 
     def logPDF(self, x, params = None):
         if params is None:
@@ -141,22 +141,31 @@ class NIG(Distribution):
         gamma = np.sqrt(alpha**2 - beta**2)
         scale = gamma**3 / alpha**2
         loc = - (scale * beta) / gamma
-        z = (x - loc) / scale
-        sq_term = np.sqrt(1.0 + z**2)
+        sq_term = np.sqrt(1.0 + x**2)
         log_density = (np.log(alpha) + (alpha * scale) + np.log(scale)
             - 0.5 * np.log(2.0 * np.pi)
-            + (beta * scale * z)
+            + (beta * scale * x)
             - 0.5 * np.log(sq_term**3)
         )
         bessel_val = kv(1, alpha * scale * sq_term)
         bessel_term = np.log(np.where(bessel_val > 0, bessel_val, 1e-300))
         return log_density + bessel_term
 
-    def objective(self, params, data): 
+    # def objective(self, params, data): 
+    #     alpha, beta = params
+    #     if abs(beta) > alpha:
+    #         return 1e10
+    #     log_likelihood = self.logPDF(data, (alpha, beta))
+    #     return -np.sum(log_likelihood)
+
+    def objective(self, params, data):
         alpha, beta = params
         if abs(beta) > alpha:
             return 1e10
-        log_likelihood = self.logPDF(data, (alpha, beta))
+        gamma = np.sqrt(alpha**2 - beta**2)
+        scale = gamma**3 / alpha**2
+        loc = - (scale * beta) / gamma
+        log_likelihood = stats.norminvgauss.logpdf(data, alpha, beta, loc = loc, scale = scale)
         return -np.sum(log_likelihood)
 
     def fit(self, data):

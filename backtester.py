@@ -56,11 +56,11 @@ class Backtest:
         KS_stat, KS_p = stats_obj.KS(self.distribution_list)
 
 
-        results = {"Binomial": binomial_p > p_threshold,
-                    "Kupiec": kupiec_p > p_threshold,
-                    "Christoffersen": christoffersen_p > p_threshold,
-                    "Conditional Coverage": cc_p > p_threshold,
-                    "KS Test": KS_p > p_threshold
+        results = {"Binomial": (binomial_p, binomial_p > p_threshold),
+                    "Kupiec": (kupiec_p, kupiec_p > p_threshold),
+                    "Christoffersen": (christoffersen_p, christoffersen_p > p_threshold),
+                    "Conditional Coverage": (cc_p, cc_p > p_threshold),
+                    "KS Test": (KS_p, KS_p > p_threshold)
                 }
                 
         return results
