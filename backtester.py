@@ -11,6 +11,7 @@ class Backtest:
         self.distribution = distribution
         self.forecasts = []
         self.observed = []
+        self.distribution_list = []
 
     def rolling_window(self, window_size):
         out_of_sample_size = len(self.data) - window_size
@@ -20,6 +21,7 @@ class Backtest:
         observed = np.zeros(out_of_sample_size)
         distribution_list = []
         for i in range(out_of_sample_size):
+            print(f"{i}/{out_of_sample_size}")
             training = self.data[i : i + window_size]
             model = Risk(self.distribution)
             if i > 0:
@@ -29,7 +31,7 @@ class Backtest:
 
             model.fit_distribution(training)
 
-            forecasts[i] = model.get_VaR(self.alpha)
+            forecasts[i] = model.get_VaR(training, self.alpha)
             observed[i] = self.data[i+window_size]
 
             distribution_list.append(model.distribution)
@@ -47,11 +49,11 @@ class Backtest:
 
     def statistical_tests(self, p_threshold = 0.05):
         stats_obj = Statistics(self.forecasts, self.observed, self.alpha)
-        binomial_stat, binomial_p = stats_obj.binom()
+        binomial_stat, binomial_p = stats_obj.binomial()
         kupiec_stat, kupiec_p = stats_obj.kupiec()
         christoffersen_stat, christoffersen_p = stats_obj.christoffersen()
         cc_stat, cc_p = stats_obj.conditional_coverage()
-        KS_stat, KS_p = stats_obj.KS(self.distributions)
+        KS_stat, KS_p = stats_obj.KS(self.distribution_list)
 
 
         results = {"Binomial": binomial_p > p_threshold,
@@ -63,3 +65,4 @@ class Backtest:
                 
         return results
         
+    

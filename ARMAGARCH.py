@@ -31,6 +31,11 @@ class ARMAGARCH:
         if initial is None:
             initial = np.asarray([0.1, 0.1, 0.05, 0.8])
         result = minimize(self.ARMAGARCH_obj, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
+
+        if not result.success and "LNSRCH" in result.message:
+            cold_start = np.array([0.1, 0.1, 0.05, 0.8])
+            result = minimize(self.ARMAGARCH_obj, cold_start, args=(data,), method='L-BFGS-B', bounds=bounds)
+
         self.ARMA_params['phi'] = result.x[0]
         self.ARMA_params['theta'] = result.x[1]
         self.ARMA_params['xi'] = np.mean(data) * (1-self.ARMA_params['phi'])

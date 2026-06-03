@@ -1,11 +1,13 @@
+import numpy as np
 from ARMAGARCH import ARMAGARCH
+import distributions as Distribution
 
 class Risk:
     def __init__(self, dist = None, ARMAGARCH_model = None):
         supported_distributions = {
-            "Gaussian": Gaussian,
-            "StudentT": StudentT,
-            "NIG": NIG
+            "Gaussian": Distribution.Gaussian,
+            "StudentT": Distribution.StudentT,
+            "NIG": Distribution.NIG
         }
 
         if dist is not None and dist not in supported_distributions:
@@ -13,7 +15,7 @@ class Risk:
                              f"Currently supported distributions: {list(supported_distributions.keys())}")
 
         if dist:
-            self.distribution = Distribution.supported_distributions[dist]()
+            self.distribution = supported_distributions[dist]()
         else:
             self.distribution = Distribution.Gaussian()
 
@@ -26,15 +28,15 @@ class Risk:
         return params
     
     ### Alpha here is the tail probability
-    def get_VaR(self, alpha):
-        forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast()
+    def get_VaR(self, data, alpha):
+        forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast(data)
         q = self.distribution.get_VaR_crit(alpha)
         return forecast_mean + q * np.sqrt(forecast_variance)
 
 
-    def get_CVaR(self):
-        forecast_mean, forecast_variance = ARMAGARCH.one_day_forecast()
-
+    def get_CVaR(self, data):
+        forecast_mean, forecast_variance = ARMAGARCH.one_day_forecast(data)
+        ### FINISH THIS #####
 
     
     
