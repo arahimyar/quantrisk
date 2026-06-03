@@ -78,7 +78,7 @@ class Statistics:
         return LR, 1 - stats.chi2.cdf(LR, df = 2)
 
     def get_PIT(self, distributions):
-        return [f(x) for f, x in zip(distributions, self.actual)]
+        return [f.CDF(x) for f, x in zip(distributions, self.actual)]
 
     def QQ(self, distributions):
         model = sorted(self.get_PIT(distributions))

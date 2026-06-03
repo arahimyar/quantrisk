@@ -1,4 +1,6 @@
+import numpy as np
 from scipy.stats import norm
+from scipy.optimize import minimize
 
 class ARMAGARCH:
     def __init__(self):
@@ -24,7 +26,7 @@ class ARMAGARCH:
         e_t, sigma2_t = self.compute_ARMAGARCH(data, phi, theta, A, B)
         return -np.sum(norm.logpdf(e_t[1:], loc=0, scale=np.sqrt(sigma2_t[1:])))
 
-    def fit_ARMAGARCH(self, data, initial = None):
+    def fit(self, data, initial = None):
         bounds = [(-0.999, 0.999), (-0.999, 0.999), (0.001, 0.999), (0.001,  0.999)]
         if initial is None:
             initial = np.asarray([0.1, 0.1, 0.05, 0.8])
@@ -72,42 +74,42 @@ class ARMAGARCH:
 
 ### This forces mu = -delta * beta / gamma = -beta * gamma^2/alpha^2 
 ### delta = gamma^3/alpha^2
-def NIG_obj(params, data):
-    alpha, beta = params
-    if abs(beta) > alpha:
-        return 1e10
-    gamma = np.sqrt(alpha**2 - beta**2)
-    scale = gamma**3 / alpha**2
-    loc = - (scale * beta) / gamma
-    log_likelihood = norminvgauss.logpdf(data, alpha, beta, loc = loc, scale = scale)
-    return -np.sum(log_likelihood)
+# def NIG_obj(params, data):
+#     alpha, beta = params
+#     if abs(beta) > alpha:
+#         return 1e10
+#     gamma = np.sqrt(alpha**2 - beta**2)
+#     scale = gamma**3 / alpha**2
+#     loc = - (scale * beta) / gamma
+#     log_likelihood = norminvgauss.logpdf(data, alpha, beta, loc = loc, scale = scale)
+#     return -np.sum(log_likelihood)
 
-def optimize_NIG(data, initial = None):
-    if initial is None:
-        initial = [5, 0]
-    bounds = [(0.1, np.inf), (-np.inf, np.inf)]
-    result = minimize(NIG_obj, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
-    return result.x
+# def optimize_NIG(data, initial = None):
+#     if initial is None:
+#         initial = [5, 0]
+#     bounds = [(0.1, np.inf), (-np.inf, np.inf)]
+#     result = minimize(NIG_obj, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
+#     return result.x
 
-def VaR_crit_NIG(q, alpha ,beta):
-    gamma = np.sqrt(alpha**2 - beta**2)
-    scale = gamma**3 / alpha**2
-    loc = - (scale * beta) / gamma
-    return norminvgauss.ppf(q, alpha, beta, loc=loc, scale=scale)
+# def VaR_crit_NIG(q, alpha ,beta):
+#     gamma = np.sqrt(alpha**2 - beta**2)
+#     scale = gamma**3 / alpha**2
+#     loc = - (scale * beta) / gamma
+#     return norminvgauss.ppf(q, alpha, beta, loc=loc, scale=scale)
 
-######### Student t ###########
-def StudentT_obj(params, data):
-    nu, = params
-    scale = np.sqrt((nu - 2) / nu)
-    log_likelihood = t.logpdf(data, df = nu, scale = scale)
-    return -np.sum(log_likelihood)
+# ######### Student t ###########
+# def StudentT_obj(params, data):
+#     nu, = params
+#     scale = np.sqrt((nu - 2) / nu)
+#     log_likelihood = t.logpdf(data, df = nu, scale = scale)
+#     return -np.sum(log_likelihood)
 
-def optimize_StudentT(data, initial = None):
-    if initial is None:
-        initial = 10
-    bounds = [(2.01, np.inf)]
-    result = minimize(StudentT_obj, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
-    return result.x
+# def optimize_StudentT(data, initial = None):
+#     if initial is None:
+#         initial = 10
+#     bounds = [(2.01, np.inf)]
+#     result = minimize(StudentT_obj, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
+#     return result.x
 
-def VaR_crit_StudentT(q, nu):
-    return t.ppf(q, df = nu, scale = np.sqrt((nu - 2) / nu))
+# def VaR_crit_StudentT(q, nu):
+#     return t.ppf(q, df = nu, scale = np.sqrt((nu - 2) / nu))

@@ -15,6 +15,10 @@ class Distribution(ABC):
         pass
 
     @abstractmethod
+    def CDF(self, x):
+        pass
+
+    @abstractmethod
     def logPDF(self, x, params = None):
         pass
 
@@ -42,6 +46,9 @@ class Gaussian(Distribution):
     def get_init_params(self, initial_guess = None):
         return None
 
+    def CDF(self, x):
+        return stats.norm.cdf(x)
+
     def logPDF(self, x, params = None):
         ### Vectorized so x can be a vector
         return -0.5 * np.log(2 * np.pi) - 0.5 * (x ** 2)
@@ -67,6 +74,10 @@ class StudentT(Distribution):
     ### Input must be a list
     def get_init_params(self, initial_guess = None):
         return [10] if initial_guess is None else init_guess
+
+    def CDF(self, x):
+        nu = self.parameters["nu"]
+        return stats.t.cdf(x, df = nu, loc = 0, scale = np.sqrt((nu - 2) / nu))
 
     def logPDF(self, x, params = None):
         nu = self.parameters['nu'] if params is None else params[0]
@@ -112,6 +123,14 @@ class NIG(Distribution):
         ### Come back to this, find a more dynamic way
         return [5,0] if initial_guess is None else initial_guess
 
+    def CDF(self, x):
+        alpha = self.parameters["alpha"]
+        beta = self.parameters["beta"]
+        gamma = np.sqrt(alpha**2 - beta**2)
+        scale = gamma**3 / alpha**2
+        loc = - (scale * beta) / gamma
+        return stats.norminvgauss.cdf(x, a = alpha * scale, b = beta * scale, scale = scale, loc = loc)
+
     def logPDF(self, x, params = None):
         if params is None:
             alpha, beta = self.parameters["alpha"], self.parameters["beta"]
@@ -146,7 +165,12 @@ class NIG(Distribution):
         result = minimize(self.objective, initial, args=(data,), method='L-BFGS-B', bounds=bounds)
         self.parameters["alpha"] = result.x[0]
         self.parameters["beta"] = result.x[1]
-        return [self.parameters["alpha"],  self.parameters["beta"]]
+        alpha = self.parameters["alpha"]
+        beta = self.parameters["beta"]
+        gamma = np.sqrt(alpha**2 - beta**2)
+        scale = gamma**3 / alpha**2
+        loc = - (scale * beta) / gamma
+        return [alpha, beta, scale, loc]
 
     def get_VaR_crit(self, x):
         alpha = self.parameters["alpha"]

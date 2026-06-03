@@ -22,8 +22,8 @@ class Risk:
     def fit_distribution(self, data):
         resids, variances = self.ARMAGARCH.get_innovations(data)
         shocks = self.ARMAGARCH.get_shocks(resids, variances)
-        self.distribution.fit(shocks)
-        return None
+        params = self.distribution.fit(shocks)
+        return params
     
     ### Alpha here is the tail probability
     def get_VaR(self, alpha):
