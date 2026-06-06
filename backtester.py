@@ -20,11 +20,12 @@ class Backtest:
         forecasts = np.zeros(out_of_sample_size)
         observed = np.zeros(out_of_sample_size)
         distribution_list = []
+        warm_ARMA_GARCH_params = None
         for i in range(out_of_sample_size):
             print(f"{i}/{out_of_sample_size}")
             training = self.data[i : i + window_size]
             model = Risk(self.distribution)
-            if i > 0:
+            if warm_ARMA_GARCH_params is not None:
                 model.ARMAGARCH.fit(training, warm_ARMA_GARCH_params)
             else:
                 model.ARMAGARCH.fit(training)
@@ -34,13 +35,18 @@ class Backtest:
             forecasts[i] = model.get_VaR(training, self.alpha)
             observed[i] = self.data[i+window_size]
 
-            distribution_list.append(model.distribution)
-
             warm_ARMA_GARCH_params = (model.ARMAGARCH.ARMA_params['phi'],
             model.ARMAGARCH.ARMA_params['theta'],
             model.ARMAGARCH.GARCH_params['A'],
             model.ARMAGARCH.GARCH_params['B'],
             )
+
+
+            forecast_mean, forecast_var = model.ARMAGARCH.one_day_forecast(training)
+            shock = (observed[i] - forecast_mean)/np.sqrt(forecast_var)
+            distribution_list.append(model.distribution.CDF(shock))
+
+
 
         self.forecasts = forecasts
         self.observed = observed

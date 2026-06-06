@@ -81,11 +81,12 @@ class Statistics:
         return [f.CDF(x) for f, x in zip(distributions, self.actual)]
 
     def QQ(self, distributions):
-        model = sorted(self.get_PIT(distributions))
+        # model = sorted(self.get_PIT(distributions))
+        model = sorted(distributions)
         n = len(model)
         emperical = [float(i+1) / float(n+1) for i in range(n)]
         return list(zip(emperical, model))
     
     def KS(self, distributions):
-        pit_vals = self.get_PIT(distributions)
-        return stats.kstest(pit_vals, 'uniform')
+        # pit_vals = self.get_PIT(distributions)
+        return stats.kstest(distributions, 'uniform')
