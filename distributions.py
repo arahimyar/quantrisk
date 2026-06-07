@@ -19,7 +19,7 @@ class Distribution(ABC):
         pass
 
     @abstractmethod
-    def logPDF(self, x, params = None):
+    def objective(self, params, data):
         pass
 
     @abstractmethod
@@ -49,9 +49,9 @@ class Gaussian(Distribution):
     def CDF(self, x):
         return stats.norm.cdf(x)
 
-    def logPDF(self, x, params = None):
+    def objective(self, params, data):
         ### Vectorized so x can be a vector
-        return -0.5 * np.log(2 * np.pi) - 0.5 * (x ** 2)
+        return -0.5 * np.log(2 * np.pi) - 0.5 * (data ** 2)
 
     def fit(self, data):
         return []
@@ -79,17 +79,23 @@ class StudentT(Distribution):
         nu = self.parameters["nu"]
         return stats.t.cdf(x, df = nu, loc = 0, scale = np.sqrt((nu - 2) / nu))
 
-    def logPDF(self, x, params = None):
-        nu = self.parameters['nu'] if params is None else params[0]
-        if nu <= 2.01:
-            return -1e10 * np.ones_like(x)
-        log_c = gammaln((nu + 1) / 2) - gammaln(nu / 2) - 0.5 * np.log(np.pi * (nu-2))
-        return log_c - ((nu + 1) / 2) * np.log(1 + (x**2) / (nu-2))
+    # def logPDF(self, x, params = None):
+    #     nu = self.parameters['nu'] if params is None else params[0]
+    #     if nu <= 2.01:
+    #         return -1e10 * np.ones_like(x)
+    #     log_c = gammaln((nu + 1) / 2) - gammaln(nu / 2) - 0.5 * np.log(np.pi * (nu-2))
+    #     return log_c - ((nu + 1) / 2) * np.log(1 + (x**2) / (nu-2))
 
     def objective(self, params, data):
         nu, = params
-        log_likelihood = self.logPDF(data, params)
+        scale = np.sqrt((nu - 2) / nu)
+        log_likelihood = stats.t.logpdf(data, df = nu, scale = scale)
         return -np.sum(log_likelihood)
+
+    # def objective(self, params, data):
+    #     nu, = params
+    #     log_likelihood = self.logPDF(data, params)
+    #     return -np.sum(log_likelihood)
 
     def fit(self, data):
         bounds = [(2.01, np.inf)]

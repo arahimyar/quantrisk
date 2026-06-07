@@ -11,7 +11,7 @@ class Backtest:
         self.distribution = distribution
         self.forecasts = []
         self.observed = []
-        self.distribution_list = []
+        self.CDF_evals = []
 
     def rolling_window(self, window_size):
         out_of_sample_size = len(self.data) - window_size
@@ -19,7 +19,7 @@ class Backtest:
             raise ValueError("Window size too large relative to data length.")
         forecasts = np.zeros(out_of_sample_size)
         observed = np.zeros(out_of_sample_size)
-        distribution_list = []
+        CDF_evals = []
         warm_ARMA_GARCH_params = None
         for i in range(out_of_sample_size):
             print(f"{i}/{out_of_sample_size}")
@@ -44,13 +44,13 @@ class Backtest:
 
             forecast_mean, forecast_var = model.ARMAGARCH.one_day_forecast(training)
             shock = (observed[i] - forecast_mean)/np.sqrt(forecast_var)
-            distribution_list.append(model.distribution.CDF(shock))
+            CDF_evals.append(model.distribution.CDF(shock))
 
 
 
         self.forecasts = forecasts
         self.observed = observed
-        self.distribution_list = distribution_list
+        self.CDF_evals = CDF_evals
         return forecasts, observed
 
     def statistical_tests(self, p_threshold = 0.05):
@@ -59,7 +59,7 @@ class Backtest:
         kupiec_stat, kupiec_p = stats_obj.kupiec()
         christoffersen_stat, christoffersen_p = stats_obj.christoffersen()
         cc_stat, cc_p = stats_obj.conditional_coverage()
-        KS_stat, KS_p = stats_obj.KS(self.distribution_list)
+        KS_stat, KS_p = stats_obj.KS(self.CDF_evals)
 
 
         results = {"Binomial": (binomial_p, binomial_p > p_threshold),

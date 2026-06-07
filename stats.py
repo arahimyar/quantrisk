@@ -77,16 +77,11 @@ class Statistics:
         LR = LR_kupiec + LR_christoffersen
         return LR, 1 - stats.chi2.cdf(LR, df = 2)
 
-    def get_PIT(self, distributions):
-        return [f.CDF(x) for f, x in zip(distributions, self.actual)]
-
-    def QQ(self, distributions):
-        # model = sorted(self.get_PIT(distributions))
-        model = sorted(distributions)
+    def QQ(self, CDF_evals):
+        model = sorted(CDF_evals)
         n = len(model)
         emperical = [float(i+1) / float(n+1) for i in range(n)]
         return list(zip(emperical, model))
     
-    def KS(self, distributions):
-        # pit_vals = self.get_PIT(distributions)
-        return stats.kstest(distributions, 'uniform')
+    def KS(self, CDF_evals):
+        return stats.kstest(CDF_evals, 'uniform')
