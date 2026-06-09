@@ -4,9 +4,9 @@ from stats import Statistics
 
 class Plotter:
 
-    def QQ(self, distributions, prediction, actual, alpha):
+    def QQ(self, CDF_evals, prediction, actual, alpha):
         stat_obj = Statistics(prediction, actual, alpha)
-        emperical, model = zip(*stat_obj.QQ(distributions))
+        emperical, model = zip(*stat_obj.QQ(CDF_evals))
         plt.figure(figsize=(6, 6))
         plt.scatter(emperical, model, color = "red")
         plt.title("QQ")

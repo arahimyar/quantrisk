@@ -34,9 +34,10 @@ class Risk:
         return forecast_mean + q * np.sqrt(forecast_variance)
 
 
-    def get_CVaR(self, data):
-        forecast_mean, forecast_variance = ARMAGARCH.one_day_forecast(data)
-        ### FINISH THIS #####
+    def get_CVaR(self, data, alpha):
+        forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast(data)
+        q = self.distribution.get_CVaR_crit(alpha)
+        return forecast_mean + q * np.sqrt(forecast_variance)
 
     
     

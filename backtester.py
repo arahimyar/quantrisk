@@ -22,7 +22,6 @@ class Backtest:
         CDF_evals = []
         warm_ARMA_GARCH_params = None
         for i in range(out_of_sample_size):
-            print(f"{i}/{out_of_sample_size}")
             training = self.data[i : i + window_size]
             model = Risk(self.distribution)
             if warm_ARMA_GARCH_params is not None:
@@ -45,8 +44,6 @@ class Backtest:
             forecast_mean, forecast_var = model.ARMAGARCH.one_day_forecast(training)
             shock = (observed[i] - forecast_mean)/np.sqrt(forecast_var)
             CDF_evals.append(model.distribution.CDF(shock))
-
-
 
         self.forecasts = forecasts
         self.observed = observed
