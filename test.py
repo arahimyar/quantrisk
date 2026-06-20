@@ -62,16 +62,3 @@ for dist in distributions:
         print(f"  Saved: {output_filename}")
     else:
         print(f"  Warning: No data collected for distribution '{dist}', skipping file export.")
-
-#####
-
-
-# data = data[-1000:]
-# alpha = 0.01
-# test = Backtest(data, alpha, "StudentT")
-# test.rolling_window(250)
-# plotter_obj = Plotter()
-# plotter_obj.QQ(test.CDF_evals, test.forecasts, test.observed, alpha)
-# plotter_obj.VaR(test.forecasts, test.observed, alpha)
-
-# print(test.statistical_tests())
