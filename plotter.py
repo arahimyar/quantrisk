@@ -1,17 +1,27 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from stats import Statistics
+from typing import Sequence
 
 class Plotter:
 
-    def QQ(self, CDF_evals, prediction, actual, alpha):
+    def QQ(self, CDF_evals: Sequence[float], prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
+        """
+        Create QQ plot
+
+        Parameters:
+        CDF_evals: CDF evaluations
+        prediction: forecasted values
+        actual: observed values
+        alpha: tail probability (e.g. 99% VaR -> alpha = 0.01)
+        """
         stat_obj = Statistics(prediction, actual, alpha)
-        emperical, model = zip(*stat_obj.QQ(CDF_evals))
+        empirical, model = zip(*stat_obj.QQ(CDF_evals))
         plt.figure(figsize=(6, 6))
-        plt.scatter(emperical, model, color = "red")
+        plt.scatter(empirical, model, color = "red")
         plt.title("QQ")
-        plt.xlabel("Emperical Quantiles")
-        plt.ylabel("Modoel Quantiles")
+        plt.xlabel("Empirical Quantiles")
+        plt.ylabel("Model Quantiles")
         plt.plot([0, 1], [0, 1], color='black', linestyle='--', linewidth=3, label='Theoretical Uniform')
         plt.xlim(0, 1)
         plt.ylim(0, 1)
@@ -21,7 +31,15 @@ class Plotter:
         plt.show()
 
     
-    def VaR(self, prediction, actual, alpha):
+    def VaR(self, prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
+        """
+        Create time series plot showing observed values, forecasted values, and VaR time series
+
+        Parameters: 
+        prediction: forecasted values
+        actual: observed values
+        alpha: tail probability (e.g. 99% VaR -> alpha = 0.01)
+        """
         prediction = np.asarray(prediction)
         actual = np.asarray(actual)
         time = np.arange(len(actual))

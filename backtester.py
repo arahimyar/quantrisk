@@ -2,18 +2,37 @@ import numpy as np
 from risk import Risk
 from stats import Statistics
 from plotter import Plotter
+from typing import Tuple, Sequence
 
 class Backtest:
+    """
+    Backtesting class to asssess model performance
+    """
 
-    def __init__(self, data, alpha, distribution):
-        self.data = data
+    def __init__(self, data: Sequence[float], alpha: float, distribution: str) -> None:
+        """
+        Parameters:
+        data: data
+        alpha: tail probability, e.g. 99% VaR -> alpha = 0.01
+        distribution: distribution name
+        """
+        self.data = np.asarray(data)
         self.alpha = alpha
         self.distribution = distribution
         self.forecasts = []
         self.observed = []
         self.CDF_evals = []
 
-    def rolling_window(self, window_size):
+    def rolling_window(self, window_size: int) -> Tuple[Sequence[float], Sequence[float]]:
+        """
+        Computes rolling window back test
+
+        Parameters:
+        window_size: size of rolling window
+
+        Returns: 
+        tuple of forecasted and observed values
+        """
         out_of_sample_size = len(self.data) - window_size
         if out_of_sample_size < 0:
             raise ValueError("Window size too large relative to data length.")
@@ -50,7 +69,16 @@ class Backtest:
         self.CDF_evals = CDF_evals
         return forecasts, observed
 
-    def statistical_tests(self, p_threshold = 0.05):
+    def statistical_tests(self, p_threshold = 0.05) -> dict:
+        """
+        Performs all statistical tests
+
+        Parameters:
+        p_threshold: Significane threshold for statistical tests
+
+        Returns:
+        Dictonary whose key is a statistical test and whose value is a tuple consisting of (p-value, pass/fail)
+        """
         stats_obj = Statistics(self.forecasts, self.observed, self.alpha)
         binomial_stat, binomial_p = stats_obj.binomial()
         kupiec_stat, kupiec_p = stats_obj.kupiec()

@@ -1,6 +1,5 @@
 import scipy.stats as stats
 import numpy as np
-import numpy.typing as npt
 from typing import Tuple, Sequence, Optional
 
 class Statistics:
@@ -23,7 +22,7 @@ class Statistics:
         self.exceedances = np.sum(self.mask)
         self.N = len(actual)
 
-    def binomial(self, alpha: Optional[float] = None) -> tuple[float, float]:
+    def binomial(self, alpha: Optional[float] = None) -> Tuple[float, float]:
         """
         Binomial test
 
@@ -36,7 +35,7 @@ class Statistics:
         upper = stats.binom.sf(e - 1, n, alpha) if e > 0 else 1.0
         return float(e), float(min(1, 2 * min(lower, upper)))
 
-    def kupiec(self, alpha: Optional[float] = None) -> tuple[float, float]:
+    def kupiec(self, alpha: Optional[float] = None) -> Tuple[float, float]:
         """
         Kupiec test
 
@@ -98,7 +97,7 @@ class Statistics:
         LR = max(0.0, -2 * (num - denom))
         return float(LR), float(1 - stats.chi2.cdf(LR, df = 1))
 
-    def conditional_coverage(self, alpha: Optional[float] = None) -> tuple[float, float]:
+    def conditional_coverage(self, alpha: Optional[float] = None) -> Tuple[float, float]:
         """
         Conditional coverage test (i.e. combining Kupiec and Christoffersen)
 

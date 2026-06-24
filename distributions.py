@@ -5,7 +5,7 @@ from scipy.integrate import quad
 from scipy.special import gammaln, kv
 import numpy as np
 import numpy.typing as npt
-from typing import Tuple, Sequence, Optional
+from typing import Sequence, Optional
 
 class Distribution(ABC):
     """
