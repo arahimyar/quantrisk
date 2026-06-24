@@ -5,6 +5,17 @@ import numpy.typing as npt
 from typing import Tuple, Sequence, Optional
 
 class ARMAGARCH:
+    """
+    ARMA GARCH class with the following notation:
+
+    xi: ARMA constant
+    phi: AR coefficient.
+    theta: MA coefficient.
+    C: GARCH constant
+    A: GARCH error coefficient.
+    B: GARCH variance coefficient
+    """
+
     def __init__(self):
         self.ARMA_params = {}
         self.GARCH_params = {}
@@ -12,13 +23,7 @@ class ARMAGARCH:
     def compute_ARMAGARCH(self, data : npt.ArrayLike, phi : float, theta : float, A : float, B : float) -> Tuple[npt.NDArray, npt.NDArray]:
         """
         Computes ARMA(1,1)-GARCH(1,1) residuals and conditional variances.
-        The ARMA constant (xi) and GARCH constant (C) are calculated implicitly as a function of sample statistics and the other paramters.
-
-        Parameters:
-        phi: AR coefficient.
-        theta: MA coefficient.
-        A: GARCH error coefficient.
-        B: GARCH variance coefficient
+        The ARMA constant (xi) and GARCH constant (C) are calculated implicitly as a function of sample statistics and the other parameters.
         """
 
         data = np.asarray(data)
@@ -38,7 +43,7 @@ class ARMAGARCH:
         Objective function for ARMA(1,1)-GARCH(1,1) with Gaussian errors.
 
         Parameters:
-        params: ARMA(1,1)-GARCH(1,1) paramters in (phi, theta, A, B) order
+        params: ARMA(1,1)-GARCH(1,1) parameters in (phi, theta, A, B) order
         """
 
         phi, theta, A, B = params
@@ -54,6 +59,7 @@ class ARMAGARCH:
         Parameters:
         initial: Initial guess for ARMA(1,1)-GARCH(1,1) paramters in (phi, theta, A, B) order
         """
+        data = np.asarray(data)
         bounds = [(-0.999, 0.999), (-0.999, 0.999), (0.001, 0.999), (0.001,  0.999)]
         if initial is None:
             initial = np.asarray([0.1, 0.1, 0.05, 0.8])
