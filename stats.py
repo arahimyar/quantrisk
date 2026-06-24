@@ -1,8 +1,21 @@
 import scipy.stats as stats
 import numpy as np
+import numpy.typing as npt
+from typing import Tuple, Sequence, Optional
 
 class Statistics:
-    def __init__(self, prediction, actual, alpha):
+    """
+    Statistics class containing all the statistical tests used to assess fit and VaR performance.
+
+    Here alpha is the tail probability, e.g. 99% VaR implies alpha = 0.01.
+    """
+    def __init__(self, prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
+        """
+        Parameters:
+        prediction: forecasted values
+        actual: observed values
+        alpha: tail probability
+        """
         self.prediction = np.asarray(prediction)
         self.actual = np.asarray(actual)
         self.alpha = alpha
@@ -10,15 +23,25 @@ class Statistics:
         self.exceedances = np.sum(self.mask)
         self.N = len(actual)
 
-    def binomial(self, alpha = None):
+    def binomial(self, alpha: Optional[float] = None) -> tuple[float, float]:
+        """
+        Binomial test
+
+        Returns: (test-statistic, p-value) tuple
+        """
         alpha = self.alpha if alpha is None else alpha
         n = self.N
         e = self.exceedances
         lower = stats.binom.cdf(e, n, alpha)
         upper = stats.binom.sf(e - 1, n, alpha) if e > 0 else 1.0
-        return e, min(1, 2 * min(lower, upper))
+        return float(e), float(min(1, 2 * min(lower, upper)))
 
-    def kupiec(self, alpha = None):
+    def kupiec(self, alpha: Optional[float] = None) -> tuple[float, float]:
+        """
+        Kupiec test
+
+        Returns: (test-statistic, p-value) tuple
+        """
         alpha = self.alpha if alpha is None else alpha
         n = self.N
         e = self.exceedances
@@ -32,9 +55,14 @@ class Statistics:
         log_null = (n - e) * np.log(1 - alpha) + e * np.log(alpha)
         log_alt = (n - e) * np.log(1 - (e / n)) + e * np.log(e / n)
         LR = -2 * (log_null - log_alt)
-        return LR, 1 - stats.chi2.cdf(LR, df = 1)
+        return float(LR), float(1 - stats.chi2.cdf(LR, df = 1))
 
-    def christoffersen(self):
+    def christoffersen(self) -> tuple[float, float]:
+        """
+        Christoffersen test
+
+        Returns: (test-statistic, p-value) tuple
+        """
         if self.exceedances < 2:
             return 0.0, 1.0
         no_no = 0
@@ -67,21 +95,41 @@ class Statistics:
         if p1 > 0: denom += yes_yes * np.log(p1)
         if p1 < 1: denom += yes_no * np.log(1 - p1)
 
-        LR = -2 * (num - denom)
-        return LR, 1 - stats.chi2.cdf(LR, df = 1)
+        LR = max(0.0, -2 * (num - denom))
+        return float(LR), float(1 - stats.chi2.cdf(LR, df = 1))
 
-    def conditional_coverage(self, alpha = None):
+    def conditional_coverage(self, alpha: Optional[float] = None) -> tuple[float, float]:
+        """
+        Conditional coverage test (i.e. combining Kupiec and Christoffersen)
+
+        Returns: (test-stat, p-value) tuple
+        """
         alpha = self.alpha if alpha is None else alpha
         LR_kupiec, _ = self.kupiec(alpha)
         LR_christoffersen, _ = self.christoffersen()
         LR = LR_kupiec + LR_christoffersen
-        return LR, 1 - stats.chi2.cdf(LR, df = 2)
+        return float(LR), float(1 - stats.chi2.cdf(LR, df = 2))
 
-    def QQ(self, CDF_evals):
+    def QQ(self, CDF_evals: Sequence[float]) -> list[tuple[float, float]]:
+        """
+        Returns empirical vs theoretical probabilities pairs
+
+        Parameters:
+        CDF_evals: CDF evaluations
+        """
         model = sorted(CDF_evals)
         n = len(model)
-        emperical = [float(i+1) / float(n+1) for i in range(n)]
-        return list(zip(emperical, model))
+        empirical = [float(i+1) / float(n+1) for i in range(n)]
+        return list(zip(empirical, model))
     
-    def KS(self, CDF_evals):
-        return stats.kstest(CDF_evals, 'uniform')
+    def KS(self, CDF_evals: Sequence[float]) -> tuple[float, float]:
+        """
+        Kolmogorov Smirnov test against uniform distribution
+
+        Parameters:
+        CDF_evals: CDF evaluations
+
+        Returns: (test-statistic, p-value) tuple
+        """
+        stat, pval = stats.kstest(CDF_evals, 'uniform')
+        return float(stat), float(pval)

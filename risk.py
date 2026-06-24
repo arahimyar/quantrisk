@@ -44,14 +44,14 @@ class Risk:
         data = np.asarray(data)
         forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast(data)
         q = self.distribution.get_VaR_crit(alpha)
-        return forecast_mean + q * np.sqrt(forecast_variance)
+        return float(forecast_mean + q * np.sqrt(forecast_variance))
 
 
     def get_CVaR(self, data: npt.ArrayLike, alpha: float) -> float:
         data = np.asarray(data)
         forecast_mean, forecast_variance = self.ARMAGARCH.one_day_forecast(data)
         q = self.distribution.get_CVaR_crit(alpha)
-        return forecast_mean + q * np.sqrt(forecast_variance)
+        return float(forecast_mean + q * np.sqrt(forecast_variance))
 
     
     
