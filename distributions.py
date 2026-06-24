@@ -4,34 +4,65 @@ from scipy.optimize import minimize
 from scipy.integrate import quad
 from scipy.special import gammaln, kv
 import numpy as np
+import numpy.typing as npt
+from typing import Tuple, Sequence, Optional
 
 class Distribution(ABC):
-    def __init__(self, **kwargs):
+    """
+    Abstract base class for distributions. 
+    Any distribution class used to model ARMA-GARCH shocks must inherit from this class and implement all abstract methods to ensure compatibility with the Risk class.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
         self.parameters = kwargs
-        self.parameter_names = []
+        self.parameter_names: list[str] = []
 
     @abstractmethod
-    def get_init_params(self, initial_guess = None):
+    def get_init_params(self, initial_guess: Optional[Sequence[float]] = None) -> Sequence[float]:
+        """
+        Get the initial guess for the parameters of the distribution.
+        Returns a sequence containing all the parameters.
+        """
         pass
 
     @abstractmethod
-    def CDF(self, x):
+    def CDF(self, x: float | npt.ArrayLike) -> float | npt.NDArray[np.float64]:
+        """
+        CDF of the distribution evaluated at x.
+        Input is either a float or a vector if the function allows for vectorization.
+        Returns a float or a numpy array, if vectorized.
+        """
         pass
 
     @abstractmethod
-    def objective(self, params, data):
+    def objective(self, params: Sequence[float], data: npt.ArrayLike) -> float:
+        """
+        Objective function used for optimization. Should contain the log PDF.
+        params should always be a sequence (e.g. a list or a tuple), even if distribution has only one or no parameters.
+        """
         pass
 
     @abstractmethod
-    def fit(self, data):
+    def fit(self, data: npt.ArrayLike) -> Sequence[float]:
+        """
+        Fits distribution to data. Optimization routine should be included here.
+        Returns fitted parameters as a sequence.
+        """
         pass
 
     @abstractmethod
-    def get_VaR_crit(self, x):
+    def get_VaR_crit(self, x: float) -> float:
+        """
+        Get critical value for VaR, i.e. the value corresponding to the xth tail probability. 
+        For example, if one would like 99% VaR, x = 0.01.
+        """
         pass
 
     @abstractmethod
-    def get_CVaR_crit(self, x):
+    def get_CVaR_crit(self, x: float) -> float:
+        """
+        See comments for get_VaR_crit method.
+        """
         pass
 
 

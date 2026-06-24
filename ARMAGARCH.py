@@ -20,7 +20,7 @@ class ARMAGARCH:
         self.ARMA_params = {}
         self.GARCH_params = {}
 
-    def compute_ARMAGARCH(self, data : npt.ArrayLike, phi : float, theta : float, A : float, B : float) -> Tuple[npt.NDArray, npt.NDArray]:
+    def compute_ARMAGARCH(self, data: npt.ArrayLike, phi: float, theta: float, A: float, B: float) -> Tuple[npt.NDArray, npt.NDArray]:
         """
         Computes ARMA(1,1)-GARCH(1,1) residuals and conditional variances.
         The ARMA constant (xi) and GARCH constant (C) are calculated implicitly as a function of sample statistics and the other parameters.
@@ -38,7 +38,7 @@ class ARMAGARCH:
             sigma2_t[i] = C + A * e_t[i-1] * e_t[i-1] + B * sigma2_t[i-1]
         return e_t, sigma2_t
 
-    def ARMAGARCH_obj(self, params : Sequence[float], data : npt.ArrayLike) -> float:
+    def ARMAGARCH_obj(self, params: Sequence[float], data: npt.ArrayLike) -> float:
         """
         Objective function for ARMA(1,1)-GARCH(1,1) with Gaussian errors.
 
@@ -52,7 +52,7 @@ class ARMAGARCH:
         e_t, sigma2_t = self.compute_ARMAGARCH(data, phi, theta, A, B)
         return -np.sum(norm.logpdf(e_t[1:], loc=0, scale=np.sqrt(sigma2_t[1:])))
 
-    def fit(self, data : npt.ArrayLike, initial: Optional[Sequence[float]] = None) -> None:
+    def fit(self, data: npt.ArrayLike, initial: Optional[Sequence[float]] = None) -> None:
         """
         Fit the ARMA(1,1)-GARCH(1,1) model to the data.
 
@@ -77,24 +77,24 @@ class ARMAGARCH:
         self.GARCH_params['C'] = np.var(data) * (1 - self.GARCH_params['A'] - self.GARCH_params['B'])
         return None
 
-    def get_innovations(self, data : npt.ArrayLike) -> Tuple[npt.NDArray, npt.NDArray]:
+    def get_innovations(self, data: npt.ArrayLike) -> Tuple[npt.NDArray, npt.NDArray]:
         e_t, sigma2_t = self.compute_ARMAGARCH(data, self.ARMA_params['phi'], self.ARMA_params['theta'], self.GARCH_params['A'], self.GARCH_params['B'])
         return e_t, sigma2_t
 
-    def get_shocks(self, innovations : npt.ArrayLike, variances : npt.ArrayLike) -> npt.NDArray[np.float64]:
+    def get_shocks(self, innovations: npt.ArrayLike, variances: npt.ArrayLike) -> npt.NDArray[np.float64]:
         """
         Computes the shocks, z_t = e_t / sigma_t
         """
         return innovations/np.sqrt(variances)
 
     def one_day_forecast(self, 
-        data : npt.ArrayLike, 
-        xi : Optional[float] = None, 
-        phi : Optional[float] = None, 
-        theta : Optional[float] = None, 
-        C : Optional[float] = None, 
-        A : Optional[float] = None, 
-        B : Optional[float] = None) -> Tuple[float, float]:
+        data: npt.ArrayLike, 
+        xi: Optional[float] = None, 
+        phi: Optional[float] = None, 
+        theta: Optional[float] = None, 
+        C: Optional[float] = None, 
+        A: Optional[float] = None, 
+        B: Optional[float] = None) -> Tuple[float, float]:
         """
         Compute a one day forecast for the mean and variance of a fitted ARMA(1,1)-GARCH(1,1) model.
         """
