@@ -1,6 +1,6 @@
 import numpy as np
 from .risk import Risk
-from stats import Statistics
+from .stats import Statistics
 from .plotter import Plotter
 from typing import Tuple, Sequence
 
