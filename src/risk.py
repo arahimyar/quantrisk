@@ -11,11 +11,7 @@ class Risk:
     """
 
     def __init__(self, dist: Optional[str] = None, ARMAGARCH_model: Optional[ARMAGARCH] = None) -> None:
-        supported_distributions = {
-            "Gaussian": Distribution.Gaussian,
-            "StudentT": Distribution.StudentT,
-            "NIG": Distribution.NIG
-        }
+        supported_distributions = {cls.__name__: cls for cls in Distribution.__subclasses__()}
 
         if dist is not None and dist not in supported_distributions:
             raise ValueError(f"Distribution '{dist}' not supported. "
