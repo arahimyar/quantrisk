@@ -1,4 +1,4 @@
-from src import Backtest, Plotter
+from quantrisk import Backtest, Plotter
 import os
 import numpy as np
 import time
