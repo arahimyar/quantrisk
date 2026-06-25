@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from stats import Statistics
+from .stats import Statistics
 from typing import Sequence
 
 class Plotter:

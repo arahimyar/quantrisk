@@ -1,7 +1,7 @@
 import numpy as np
-from risk import Risk
+from .risk import Risk
 from stats import Statistics
-from plotter import Plotter
+from .plotter import Plotter
 from typing import Tuple, Sequence
 
 class Backtest:

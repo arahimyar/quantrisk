@@ -1,6 +1,6 @@
 import numpy as np
-from ARMAGARCH import ARMAGARCH
-import distributions as Distribution
+from .ARMAGARCH import ARMAGARCH
+import .distributions as Distribution
 import numpy.typing as npt
 from typing import Tuple, Sequence, Optional
 
