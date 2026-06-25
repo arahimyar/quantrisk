@@ -1,5 +1,4 @@
-from backtester import Backtest
-from plotter import Plotter
+from src import Backtest, Plotter
 import os
 import numpy as np
 import time

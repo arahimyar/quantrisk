@@ -5,7 +5,7 @@ from scipy.integrate import quad
 from scipy.special import gammaln, kv
 import numpy as np
 import numpy.typing as npt
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Any, Union
 
 class Distribution(ABC):
     """
@@ -26,7 +26,7 @@ class Distribution(ABC):
         pass
 
     @abstractmethod
-    def CDF(self, x: float | npt.ArrayLike) -> float | npt.NDArray[np.float64]:
+    def CDF(self, x: Union[float, npt.ArrayLike]) -> Union[float, npt.NDArray[np.float64]]:
         """
         CDF of the distribution evaluated at x.
         Input is either a float or a vector if the function allows for vectorization.
@@ -80,7 +80,7 @@ class Gaussian(Distribution):
     def get_init_params(self, initial_guess: Optional[Sequence[float]] = None) -> Sequence[float]:
         return []
 
-    def CDF(self, x: float | npt.ArrayLike) -> float | npt.NDArray[np.float64]:
+    def CDF(self, x: Union[float, npt.ArrayLike]) -> Union[float, npt.NDArray[np.float64]]:
         val = stats.norm.cdf(x)
         if np.isscalar(x):
             return float(val)
@@ -120,7 +120,7 @@ class StudentT(Distribution):
     def get_init_params(self, initial_guess: Optional[Sequence[float]] = None) -> Sequence[float]:
         return [10] if initial_guess is None else initial_guess
 
-    def CDF(self, x: float | npt.ArrayLike) -> float | npt.NDArray[np.float64]:
+    def CDF(self, x: Union[float, npt.ArrayLike]) -> Union[float, npt.NDArray[np.float64]]:
         nu = self.parameters["nu"]
         val = stats.t.cdf(x, df = nu, loc = 0, scale = np.sqrt((nu - 2) / nu))
         if np.isscalar(x):
@@ -179,7 +179,7 @@ class NIG(Distribution):
     def get_init_params(self, initial_guess: Optional[Sequence[float]] = None) -> Sequence[float]:
         return [5,0] if initial_guess is None else initial_guess
 
-    def CDF(self, x: float | npt.ArrayLike) -> float | npt.NDArray[np.float64]:
+    def CDF(self, x: Union[float, npt.ArrayLike]) -> Union[float, npt.NDArray[np.float64]]:
         alpha = self.parameters["alpha"]
         beta = self.parameters["beta"]
         gamma = np.sqrt(alpha**2 - beta**2)

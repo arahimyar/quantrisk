@@ -1,6 +1,6 @@
 import scipy.stats as stats
 import numpy as np
-from typing import Tuple, Sequence, Optional
+from typing import List, Tuple, Sequence, Optional
 
 class Statistics:
     """
@@ -56,7 +56,7 @@ class Statistics:
         LR = -2 * (log_null - log_alt)
         return float(LR), float(1 - stats.chi2.cdf(LR, df = 1))
 
-    def christoffersen(self) -> tuple[float, float]:
+    def christoffersen(self) -> Tuple[float, float]:
         """
         Christoffersen test
 
@@ -109,7 +109,7 @@ class Statistics:
         LR = LR_kupiec + LR_christoffersen
         return float(LR), float(1 - stats.chi2.cdf(LR, df = 2))
 
-    def QQ(self, CDF_evals: Sequence[float]) -> list[tuple[float, float]]:
+    def QQ(self, CDF_evals: Sequence[float]) -> List[Tuple[float, float]]:
         """
         Returns empirical vs theoretical probabilities pairs
 
@@ -121,7 +121,7 @@ class Statistics:
         empirical = [float(i+1) / float(n+1) for i in range(n)]
         return list(zip(empirical, model))
     
-    def KS(self, CDF_evals: Sequence[float]) -> tuple[float, float]:
+    def KS(self, CDF_evals: Sequence[float]) -> Tuple[float, float]:
         """
         Kolmogorov Smirnov test against uniform distribution
 
