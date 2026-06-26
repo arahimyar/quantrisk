@@ -21,7 +21,7 @@ class Risk:
         if dist:
             self.distribution = supported_distributions[dist]()
         else:
-            self.distribution = Distribution.Gaussian()
+            self.distribution = supported_distributions['Gaussian']()
 
         self.ARMAGARCH = ARMAGARCH_model if ARMAGARCH_model is not None else ARMAGARCH()
 
