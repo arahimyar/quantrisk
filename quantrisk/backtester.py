@@ -91,7 +91,7 @@ class Backtest:
                     "Kupiec": (kupiec_p, kupiec_p > p_threshold),
                     "Christoffersen": (christoffersen_p, christoffersen_p > p_threshold),
                     "Conditional Coverage": (cc_p, cc_p > p_threshold),
-                    "KS Test": (KS_p, KS_p > p_threshold)
+                    "KS": (KS_p, KS_p > p_threshold)
                 }
                 
         return results

@@ -5,7 +5,8 @@ from typing import Sequence
 
 class Plotter:
 
-    def QQ(self, CDF_evals: Sequence[float], prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
+    @staticmethod
+    def QQ(CDF_evals: Sequence[float], prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
         """
         Create QQ plot
 
@@ -30,8 +31,8 @@ class Plotter:
         plt.tight_layout()
         plt.show()
 
-    
-    def VaR(self, prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
+    @staticmethod
+    def VaR(prediction: Sequence[float], actual: Sequence[float], alpha: float) -> None:
         """
         Create time series plot showing observed values, forecasted values, and VaR time series
 
