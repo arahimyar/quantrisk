@@ -4,8 +4,6 @@ This library supports a variety of tools for risk analysis in financial time ser
 
 The code is written with a clean, modular, object-oriented design; this framework decouples the optimization logic from the underlying statistical models, making it trivial for contributors and users to use additional distributions not already featured.
 
-See `demo.ipynb` for more a walkthrough.
-
 ## Model Framework
 
 ### Notation
@@ -39,5 +37,20 @@ Users can implement a distribution not listed above by adding to `quantrisk/dist
 
 ## Empirical Results
 
-## Usage Guide (installation, requirements)
+## Usage Guide
 
+### Installation
+1. Clone the repository
+```bash
+git clone [https://github.com/your-username/quantrisk.git](https://github.com/your-username/quantrisk.git)
+cd quantrisk
+```
+2. Install dependencies via pip: `pip install -r requirements.txt`.
+
+### Requirements
+
+See `requirements.txt` for a list of required packages and their versions. 
+
+### Demo
+
+See `demo.ipynb` for a walked-through example.
