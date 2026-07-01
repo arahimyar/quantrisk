@@ -11,9 +11,13 @@ The code is written with a clean, modular, object-oriented design; this framewor
 We use the following notation for the ARMA(1,1)-GARCH(1,1) model:
 
 $$r_t = \mathbb{E}[r_{t} \mid \mathcal{F}_{t-1}] + \varepsilon_t = \xi + \phi r_{t-1} + \theta \varepsilon_{t-1} + \varepsilon_{t}$$
+
 $$\sigma_{t}^2 = C + B \sigma_{t-1}^2 + A\varepsilon_{t-1}^2$$
+
 $$\varepsilon_t = \sigma_t z_t$$
+
 $$z_t \sim \mathcal{D}(0,1)$$
+
 Here $\mathcal{F}_{t-1}$ denotes the filtration at time $t-1$, and $\mathcal{D}(0,1)$ refers to any standardized (i.e. mean zero and unit variance) continuous distribution. We refer to $\{\varepsilon_t\}$ as the **innovations** and $\{z_t\}$ as the **shocks**.
 
 For tail risk, we let $\alpha$ denote the tail probability so that, for example, 99% VaR corresponds to $\alpha = 0.01$.
@@ -88,6 +92,6 @@ See `requirements.txt` for a list of required packages and their versions.
 
 See `demo.ipynb` for a walked-through example.
 
-### Bugs
+## Contact & Bugs
 
-Please report any bugs to abdul.rahimyar@stonybrook.edu.
+For questions or to report any bugs please contact abdul.rahimyar@stonybrook.edu.
