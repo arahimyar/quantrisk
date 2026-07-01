@@ -87,3 +87,7 @@ See `requirements.txt` for a list of required packages and their versions.
 ### Demo
 
 See `demo.ipynb` for a walked-through example.
+
+### Bugs
+
+Please report any bugs to abdul.rahimyar@stonybrook.edu.
