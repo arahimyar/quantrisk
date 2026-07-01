@@ -37,6 +37,39 @@ Users can implement a distribution not listed above by adding to `quantrisk/dist
 
 ## Empirical Results
 
+The model was evalauted on daily log returns of 100 S&P 500 stocks chosen from a variety of sectors. 
+
+<details>
+<summary><b>Click to view the 100 S&P 500 assets tested</b></summary>
+<p>
+<code>AAPL, ABBV, ABT, ACN, ADBE, AIG, AMAT, AMD, AMGN, AMT, AMZN, AVGO, AXP, BA, BAC, BK, BKNG, BLK, BMY, C, CAT, CL, CMCSA, COF, COP, COST, CRM, CSCO, CVS, CVX, DE, DHR, DIS, DUK, EMR, FDX, GE, GILD, GM, GOOG, GOOGL, GS, GD, HD, HON, IBM, INTC, INTU, ISRG, JNJ, JPM, KO, LLY, LMT, LOW, LRCX, MA, MCD, MDLZ, MDT, MET, META, MMM, MO, MS, MSFT, MU, NEE, NFLX, NKE, NOW, NVDA, ORCL, PEP, PFE, PG, PLTR, PM, QCOM, RTX, SBUX, SCHW, SO, SPG, T, TMO, TMUS, TSLA, TXN, UBER, UNH, UNP, UPS, USB, V, VZ, WFC, WMT, XOM</code>
+</p>
+</details>
+
+For each asset we perform a rolling window backtest with a window size of 250 and a total of 750 out of sample tests. For each backtest we fit a ARMA(1,1)-GARCH(1,1) model using Gaussian, Student-t, and NIG errors. We assess model performance using various statistical tests. 
+
+The results are given below. In each table we record the number of assets that passed the statistical test (at a 5% significance level) over the total number of assets. We also report the average run time.
+
+### 95% VaR:
+|Distribution | Kupiec | Binomial | Christoffersen | Conditional Coverage | KS | Average Run Time (all backtests) | Average Run Time (per backtest)|
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|**Gaussian** | 93/100 | 92/100 | 95/1000 | 91/100 | 30/100 | 32.55s | 0.04s
+|**Student-t** | 92/100 | 89/100 | 94/100 | 92/100 | 96/100 | 36.35s | 0.05s
+|**NIG** | 98/100 | 95/100 | 92/100 | 97/100 | 99/1000 | 53.85s | 0.07s
+
+
+
+### 99% VaR
+
+|Distribution | Kupiec | Binomial | Christoffersen | Conditional Coverage | KS | Average Run Time (all backtests) | Average Run Time (per backtest)|
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|**Gaussian** | 40/100 | 40/100 | 98/100 | 49/100 | 30/100 | 32.6s | 0.04s
+|**Student-t** | 88/100 | 88/100 | 96/100 | 92/100 | 92/100 | 96/100 | 36.44s | 0.05s
+|**NIG** | 91/100 | 91/100 | 93/100 | 95/100 | 99/100 | 54.12s | 0.07s
+
+As expected, the Gaussian performs poorly at extreme VaR levels, primarily due to its light tails. We observe excellent results when using the NIG distribution while maintaining efficient runtimes.
+
+
 ## Usage Guide
 
 ### Installation
